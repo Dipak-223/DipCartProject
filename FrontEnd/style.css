@@ -88,3 +88,22 @@ button {
 button:hover {
     background-color: #1748b0;
 }
+
+.product-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.product {
+    background-color: white;
+    width: 250px;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+
+.product h3 {
+    margin-bottom: 15px;
+}
