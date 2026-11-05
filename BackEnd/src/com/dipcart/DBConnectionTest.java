@@ -2,26 +2,42 @@ package com.dipcart;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBConnectionTest {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        String url = "jdbc:oracle:thin:@localhost:1521:free";
-        String username = "C##DIPCART";
-        String password = "dipcart";
+	    String url = "jdbc:oracle:thin:@localhost:1521:free";
+	    String username = "C##DIPCART";
+	    String password = "dipcart";
 
-        try {
-            Connection con = DriverManager.getConnection(
-                    url, username, password);
+	    String query = "DELETE FROM PRODUCTS WHERE PRODUCT_ID = ?";
 
-            System.out.println("Oracle Database Connected Successfully!");
+	    try {
 
-            con.close();
+	        Connection con = DriverManager.getConnection(url, username, password);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	        PreparedStatement ps = con.prepareStatement(query);
+
+	        ps.setInt(1, 5);
+
+	        int rows = ps.executeUpdate();
+
+	        if (rows > 0) {
+	            System.out.println("Product deleted successfully!");
+	        } else {
+	            System.out.println("Product not found!");
+	        }
+
+	        ps.close();
+	        con.close();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
 }
