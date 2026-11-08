@@ -1,34 +1,86 @@
-let cartCount = 0;
 
-function addToCart() {
-    cartCount++;
+let cart = [];
+let products = [];
 
-    document.getElementById("cartCount").innerText = cartCount;
+// Add product to cart
+function addToCart(productId) {
 
-    console.log("Cart count: " + cartCount);
+    let selectedProduct = products.find(function(product) {
+        return product.productId === productId;
+    });
+
+    if (selectedProduct) {
+        cart.push(selectedProduct);
+    }
+
+    displayCart();
 }
 
-// Product data
-let products = [
-    { id: 1, name: "Wireless Headphones", price: 999 },
-    { id: 2, name: "Smart Watch", price: 1499 },
-    { id: 3, name: "Keyboard", price: 799 },
-    { id: 4, name: "Computer Mouse", price: 499 }
-];
+// Display cart items
+function displayCart() {
 
-// Display products
-let productList = document.getElementById("productList");
+    let cartItems = document.getElementById("cartItems");
+    let cartTotal = 0;
 
-products.forEach(function(product) {
+    cartItems.innerHTML = "";
 
-    productList.innerHTML += `
-        <div class="product">
-            <h3>${product.name}</h3>
-            <p>Price: ₹${product.price}</p>
-            <button onclick="addToCart()">
-                Add to Cart
-            </button>
-        </div>
-    `;
+    cart.forEach(function(product, index) {
 
-});
+        cartItems.innerHTML += `
+            <div>
+                <p>${product.productName} - ₹${product.price}</p>
+
+                <button onclick="removeFromCart(${index})">
+                    Remove
+                </button>
+            </div>
+        `;
+
+        cartTotal += product.price;
+    });
+
+    document.getElementById("cartCount").innerText = cart.length;
+
+    document.getElementById("cartTotal").innerText = cartTotal;
+
+    if (cart.length === 0) {
+        cartItems.innerText = "Your cart is empty.";
+    }
+}
+
+// Remove product from cart
+function removeFromCart(index) {
+
+    cart.splice(index, 1);
+
+    displayCart();
+}
+
+// Fetch products from Java backend
+fetch("http://localhost:8086/DipCartWeb/products")
+    .then(response => response.json())
+    .then(data => {
+
+        products = data;
+
+        let productList = document.getElementById("productList");
+
+        products.forEach(function(product) {
+
+            productList.innerHTML += `
+                <div class="product">
+                    <h3>${product.productName}</h3>
+                    <p>Price: ₹${product.price}</p>
+                    <p>Stock: ${product.stock}</p>
+
+                    <button onclick="addToCart(${product.productId})">
+                        Add to Cart
+                    </button>
+                </div>
+            `;
+        });
+
+    })
+    .catch(error => {
+        console.error("Error fetching products:", error);
+    });
